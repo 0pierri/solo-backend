@@ -1,0 +1,17 @@
+1,1589497776631,Allow uploading/linking to backgrounds,TASK_INBOX,1589497776631,1
+2,1589497776631,"Add ""back to top"" button in footer",TASK_ARCHIVED,1589498193319,1
+3,1589497776631,Show other lists on the side instead of the jumbotron,TASK_ARCHIVED,1589526583138,1
+5,1589497776631,Make list title editable,TASK_ARCHIVED,1589526581449,1
+6,1589497776631,Add delete button (task),TASK_ARCHIVED,1589453660559,1
+7,1589497776631,Add delete button (list),TASK_PINNED,1589551511394,1
+8,1589497776631,Handle session expiry properly instead of resetting,TASK_ARCHIVED,1589526589172,1
+9,1589497776631,Show/hide password button,TASK_ARCHIVED,1589417555724,1
+10,1589497776631,Retrieve tasks for the current user only,TASK_ARCHIVED,1589498199211,1
+12,1589497776631,"Filter by time created, last edited, inbox, pinned, archived",TASK_INBOX,1589440524963,1
+13,1589497776631,Validate signup form on server-side,TASK_ARCHIVED,1589526598650,1
+14,1589497776631,Add shared list indicator,TASK_INBOX,1589526614681,1
+15,1589497776631,Add sharing on server side,TASK_INBOX,1589526621789,1
+16,1589497776631,Add websockets for live updates to shared lists,TASK_INBOX,1589526630217,1
+18,1589497776631,Pencil icons for editable fields?,TASK_INBOX,1589543388630,1
+20,1589497776631,Show list progress indicator,TASK_ARCHIVED,1589547047691,1
+21,1589497776631,Saving indicator for lists,TASK_PINNED,1589551524712,1

@@ -1,0 +1,2509 @@
+{
+	"info": {
+		"_postman_id": "d6e348bf-c4d3-4b36-9bea-d3e6168e7792",
+		"name": "Backend Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CSRF",
+			"item": [
+				{
+					"name": "Login without CSRF token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5fd56fbf-5914-48af-82d1-c71f4c8beeed",
+								"exec": [
+									"pm.test(\"POST without CSRF fails\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eadd8f03-39e0-43a8-a2f2-5682cf0956ef",
+								"exec": [
+									"// Clear the token beforehand\r",
+									"pm.environment.set(\"xsrftoken\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "70e2923e-2d16-45f5-916d-504eb361353e",
+								"exec": [
+									"pm.test(\"Token set\", function() {\r",
+									"    pm.environment.set(\"xsrftoken\", pm.cookies.get('XSRF-TOKEN'));\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/csrf",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Sign up & login",
+			"item": [
+				{
+					"name": "Get lists without logging in",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "00fedc01-8db7-44b8-9dc3-220ca7256afd",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9b58e80-55ae-440a-9783-09d05841e816",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"pm.test(\"Body is empty\", function() {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in without registering",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eead90b3-3f1d-4b24-b6f0-16f09ae31688",
+								"exec": [
+									"pm.test(\"Invalid login 401s\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"username\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register with no password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5cf8de06-aa82-4a41-9cf7-210128c4b99c",
+								"exec": [
+									"pm.test(\"Missing password fails\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Password\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"test\",\n\t\"email\": \"test@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register with no email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42d7ae6b-124b-4bc8-a3e8-10caf79a134a",
+								"exec": [
+									"pm.test(\"Missing email fails\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Email\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"username\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "234fb75e-4c8e-449c-9ca1-3eb892f9de44",
+								"exec": [
+									"pm.test(\"Register is successful\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.email).to.eql(\"username@email.com\")\r",
+									"    pm.expect(json.username).to.eql(\"username\")\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"username\",\n\t\"password\": \"password\",\n\t\"email\": \"username@email.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1a8f838-5279-4d76-8ce4-6883f5866892",
+								"exec": [
+									"pm.test(\"Login is successful\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"username\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "103f5a9e-bc6f-4b00-ac22-b21b9393e64a",
+								"exec": [
+									"pm.test(\"Get lists is successful\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Basic actions",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6e6c1249-aee4-4044-aaa5-558eff952f75",
+								"exec": [
+									"pm.test(\"Login is successful\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c22201f6-7534-4713-89b6-2a4f91e0670e",
+								"exec": [
+									"pm.test(\"Successfully get testing data\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(2);\r",
+									"    pm.expect(json[0].tasks.length).to.equal(5);\r",
+									"    pm.expect(json[1].tasks.length).to.equal(2);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb5e5ddb-d971-4241-ab25-faefd7fb7b73",
+								"exec": [
+									"pm.test(\"Successfully create list\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.name).to.equal(null);\r",
+									"    pm.expect(json.tasks.length).to.equal(0);\r",
+									"    pm.expect(json.viewers.length).to.equal(0);\r",
+									"\r",
+									"    \r",
+									"    pm.environment.set(\"new_list_id\", json.id);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete created list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35a2879d-5319-486d-9ff6-dcffc610c321",
+								"exec": [
+									"pm.test(\"Successfully delete list\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Try to get deleted list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ebe90e3f-907d-469e-9706-0105abb0d498",
+								"exec": [
+									"pm.test(\"Deleted list no longer available\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9fb65d7d-997a-44cc-be83-54a643306af7",
+								"exec": [
+									"pm.test(\"Successfully create task in list 2\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    pm.response.to.have.jsonBody({\r",
+									"        listId: 2,\r",
+									"        name: null,\r",
+									"        state: \"TASK_INBOX\"\r",
+									"    })\r",
+									"\r",
+									"    pm.environment.set(\"new_task_id\", pm.response.json().id);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/2/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"2",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit task name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "627f9913-d355-4a72-b90d-41f4ef7411ba",
+								"exec": [
+									"pm.test(\"Successfully edit task name\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody({\r",
+									"        \"id\": pm.environment.get(\"new_task_id\"),\r",
+									"        \"listId\": 2,\r",
+									"        \"name\": \"New name\",\r",
+									"        \"state\": \"TASK_INBOX\"\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"New name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/tasks/{{new_task_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit task name and state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a93cb625-3738-40a1-9666-5685c5c8eeb1",
+								"exec": [
+									"pm.test(\"Successfully edit task name and state\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody({\r",
+									"        \"id\": pm.environment.get(\"new_task_id\"),\r",
+									"        \"listId\": 2,\r",
+									"        \"name\": \"New name B\",\r",
+									"        \"state\": \"TASK_PINNED\"\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"New name B\",\n\t\"state\": \"TASK_PINNED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/tasks/{{new_task_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get list with new task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "536c5fc7-aa2f-452e-8aae-326ce813badb",
+								"exec": [
+									"pm.test(\"List contains new task\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json[1].tasks.length).to.equal(3);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f69c6cb0-d93b-49a5-aea0-c1439467aab8",
+								"exec": [
+									"pm.test(\"Successfully delete task\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tasks/{{new_task_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Batch actions",
+			"item": [
+				{
+					"name": "Create new list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6365c8e3-707e-421b-a4ce-d91fcfe06cd4",
+								"exec": [
+									"pm.test(\"Successfully create list\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    pm.environment.set(\"new_list_id\", pm.response.json().id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5f4a017c-da35-4879-910d-c95eb0aae9b7",
+								"exec": [
+									"pm.test(\"Task created\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"if(pm.response.json().id < 15) {\r",
+									"    postman.setNextRequest(\"Add tasks\");\r",
+									"}\r",
+									"else postman.setNextRequest(\"Complete all\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1e86546-2f4b-4ecf-8f12-85a0af1ca0ba",
+								"exec": [
+									"pm.test(\"List completed\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/complete",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check all completed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a0fd1e7-c020-4f62-84f2-d4b61addfba1",
+								"exec": [
+									"pm.test(\"All tasks now completed\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    for (t of json.tasks) {\r",
+									"        pm.expect(t.state).to.equal(\"TASK_ARCHIVED\");\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clear all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "27ff3f7c-1a9f-4deb-849d-040b8ae9030b",
+								"exec": [
+									"pm.test(\"List cleared\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/clear",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"clear"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check all cleared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fd381734-934f-4d53-9769-5393bd84d064",
+								"exec": [
+									"pm.test(\"All tasks now cleared\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    for (t of json.tasks) {\r",
+									"        pm.expect(t.state).to.equal(\"TASK_INBOX\");\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete all lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7e1d1641-1050-43c1-b02f-9767464e82f4",
+								"exec": [
+									"pm.test(\"Delete OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check all deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "08044c38-123d-418f-b124-ec3586902db9",
+								"exec": [
+									"pm.test(\"All lists now deleted\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(0);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Share and view shared",
+			"item": [
+				{
+					"name": "Create new list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fc29a1e5-a53d-4410-8877-52c7c0ce0ada",
+								"exec": [
+									"pm.test(\"Successfully create list\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    pm.environment.set(\"new_list_id\", pm.response.json().id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add tasks again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe33cc00-6762-4413-abfe-94b2ce931c16",
+								"exec": [
+									"pm.test(\"Task created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"if (pm.response.json().id < 3) {\r",
+									"    postman.setNextRequest(\"Add tasks again\");\r",
+									"}\r",
+									"else postman.setNextRequest(\"Share list with no username\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share list with no username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4f15be6-c4de-467f-9b98-b3885aa54a42",
+								"exec": [
+									"pm.test(\"Got 400 with no username\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share list with missing user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "95d4f01f-bf5b-49cd-ab04-7976790c67f3",
+								"exec": [
+									"pm.test(\"Got 404 with missing user\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"asdf\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3984946c-5de6-4c92-98c0-5ce9d373c4cb",
+								"exec": [
+									"pm.test(\"Logged in as user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get shared lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "be63f250-1866-4aee-92af-9159ea50af66",
+								"exec": [
+									"pm.test(\"No shared lists available\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json().length).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"shared"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "185cf5b9-5c5e-44bc-b807-1bc7ec8570ce",
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share list with user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d8ad2fdb-86be-4927-bee2-fc3fc7463c7e",
+								"exec": [
+									"pm.test(\"List shared with user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm list is shared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a75c42bd-dcc1-4d9d-afc3-4268d6a13936",
+								"exec": [
+									"pm.test(\"user2 is in viewers list\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.viewers).to.contain(\"user2\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share list with user2 again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e54d5d74-3a7d-4dac-ba35-75e5ae626e78",
+								"exec": [
+									"pm.test(\"List already shared with user2\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.include(\"user2\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3b6d588e-755a-4fd9-859f-9bec4f8c42c2",
+								"exec": [
+									"pm.test(\"Logged in as user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get shared lists again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b27869c-4897-437a-907d-b0d1456f5a1a",
+								"exec": [
+									"pm.test(\"user's list is now shared\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(1);\r",
+									"    pm.expect(json[0].id).to.equal(pm.environment.get(\"new_list_id\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"shared"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Try to add task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1965fe5-802b-4231-b031-b571a78f53c6",
+								"exec": [
+									"pm.test(\"Task creation denied on shared list\", function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Try to delete list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d2e1a772-0e8f-406f-8ec5-50b4a40c3456",
+								"exec": [
+									"pm.test(\"List deletion denied on shared list\", function() {\r",
+									"    pm.response.to.have.status(403);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unshare list from self",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d2b4aca4-bcd1-4f21-b87a-8559da0c4a7e",
+								"exec": [
+									"pm.test(\"List unshared with user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "901117c7-d0c7-4eab-801a-d9dd6213ff6b",
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm share is gone",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "289f23e0-2560-4da2-b134-db94590645b3",
+								"exec": [
+									"pm.test(\"user2 is gone from viewers\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.viewers.length).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Batch remove share",
+			"item": [
+				{
+					"name": "Share list with user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "10f23453-f14e-4967-bcd3-cef6596df2ed",
+								"exec": [
+									"pm.test(\"List shared with user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share list with admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c2fef36-acb0-45aa-80c9-b09f376b7dab",
+								"exec": [
+									"pm.test(\"List shared with admin\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm list is shared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "94c72285-a880-40f6-b64f-c9f248e8cc10",
+								"exec": [
+									"pm.test(\"user2 and admin are in viewers list\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.viewers).to.contain(\"user2\");\r",
+									"    pm.expect(json.viewers).to.contain(\"admin\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5c6515d9-9fee-4d4f-b9ea-0d23f9a4d176",
+								"exec": [
+									"pm.test(\"Logged in as admin\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get shared lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d606ba94-8036-4e7e-b3d0-7f84e0d72b7a",
+								"exec": [
+									"pm.test(\"Shared list visible\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(1);\r",
+									"    pm.expect(json[0].id).to.equal(pm.environment.get(\"new_list_id\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"shared"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43182c47-2aa6-4688-934f-c04050264530",
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unshare list from all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e144c7c-3c09-48a8-8fd4-4cbd756f8960",
+								"exec": [
+									"pm.test(\"Unshare OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}/unshare",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}",
+								"unshare"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm list is unshared",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "34885d3f-8261-44a5-ab83-2471c555f1c6",
+								"exec": [
+									"pm.test(\"user2 and admin are in viewers list\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.viewers.length).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/{{new_list_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"{{new_list_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a78ab680-8ebd-49bc-822e-472e5900b696",
+								"exec": [
+									"pm.test(\"Logged in as admin\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get shared lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f8c37a2c-ad16-4963-8c46-dac1b05bddd7",
+								"exec": [
+									"pm.test(\"No shared lists available\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"shared"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5fd2b2d1-d012-4679-bbeb-06e3576dd2ee",
+								"exec": [
+									"pm.test(\"Logged in as user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get shared lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "22dac993-9854-481c-bbe4-c0f8c3876885",
+								"exec": [
+									"pm.test(\"No shared lists available\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var json = pm.response.json();\r",
+									"    pm.expect(json.length).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists/shared",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists",
+								"shared"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Log out & delete account",
+			"item": [
+				{
+					"name": "Log out user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c07d03f7-6b2f-4545-9d57-86e58aaed015",
+								"exec": [
+									"pm.test(\"Logout OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c93ee354-e4d1-46d9-af21-742a829a2960",
+								"exec": [
+									"pm.test(\"Token set\", function() {\r",
+									"    pm.environment.set(\"xsrftoken\", pm.cookies.get('XSRF-TOKEN'));\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/csrf",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm can't access lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0661cd18-22a2-43a4-8622-38c899f0321b",
+								"exec": [
+									"pm.test(\"Request unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "08c67dcd-84fc-4701-b3d4-5b622e323030",
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8eb2d751-0084-48b4-bb8e-992352d40d24",
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "72bb9542-e7cf-4b04-afed-3fff98cdf8f3",
+								"exec": [
+									"pm.test(\"Token set\", function() {\r",
+									"    pm.environment.set(\"xsrftoken\", pm.cookies.get('XSRF-TOKEN'));\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/csrf",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm can't access lists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "11a169c3-af4c-4d71-8bfd-51603d1f66ea",
+								"exec": [
+									"pm.test(\"Request unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/lists",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm can't log in as user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f20d8fa9-2fb1-44d6-ae11-3d39655972ae",
+								"exec": [
+									"pm.test(\"Request unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in as user2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0b02aa3-dfbb-47e8-8c40-6346549b4fa4",
+								"exec": [
+									"pm.test(\"Logged in as user2\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"user2\",\n\t\"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Final logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a68ec80-270e-4048-8d8b-8c70f43d8f90",
+								"exec": [
+									"pm.test(\"Tests complete\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{xsrftoken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-xsrf-token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0b86c277-eca8-4e79-81f7-062e1f1e843f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2a3749ae-ae68-4972-8535-0e8dc81a5e9c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
